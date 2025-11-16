@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { User } from "../lib/api";
+import type { User } from "../interfaces";
 
 type Props = {
   initial: User;

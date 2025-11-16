@@ -1,14 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import UserForm from "../components/UserForm";
-import {
-  createUser,
-  deleteUser,
-  fetchRandomUser,
-  listUsers,
-  updateUser,
-  extractErrorMessage,
-  type User,
-} from "../lib/api";
+import UserList from "../components/UserList";
+import { createUser, deleteUser, fetchRandomUser, listUsers, updateUser, extractErrorMessage } from "../lib/api";
+import type { User } from "../interfaces";
 
 const blankUser: User = {
   first_name: "",
@@ -147,46 +141,14 @@ export default function UsersPage() {
             </div>
           </div>
 
-          <div className="card max-h-[60vh] overflow-auto">
-            {users.length === 0 ? (
-              <div className="flex items-center justify-center py-10">
-                <span className="muted">
-                  {isError
-                    ? "Не вдалося завантажити користувачів. Спробуйте ще раз пізніше."
-                    : "Користувачів ще немає"}
-                </span>
-              </div>
-            ) : (
-              users.map((u) => (
-                <div
-                  key={u.id}
-                  className="flex items-center justify-between border-b border-white/10 py-3 last:border-0 hover:bg-white/5"
-                >
-                  <div className="truncate">
-                    <strong>
-                      {u.first_name} {u.last_name}
-                    </strong>{" "}
-                    <span className="muted">{u.email}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="btn btn-primary"
-                      type="button"
-                      onClick={() => {
-                        setDraft(null);
-                        setEditing(u);
-                      }}
-                    >
-                      Редагувати
-                    </button>
-                    <button className="btn btn-danger" type="button" onClick={() => remove(u.id!)}>
-                      Видалити
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <UserList
+            users={users}
+            onEdit={(u) => {
+              setDraft(null);
+              setEditing(u);
+            }}
+            onDelete={(id) => remove(id)}
+          />
         </div>
       </div>
     </div>
