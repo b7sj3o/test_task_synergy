@@ -2,20 +2,22 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.domain.schemas.user import User, UserCreate, UserUpdate
+from app.domain.schemas.user import UserSchema, UserCreateSchema, UserUpdateSchema
 from app.services.user_service import UserService
 from app.core.rate_limiting import limiter
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("", response_model=User)
+@router.post("", response_model=UserSchema, status_code=201)
 @limiter.limit("30/minute")
-def create_user_endpoint(request: Request, payload: UserCreate, db: Session = Depends(get_db)):
+def create_user_endpoint(
+    request: Request, payload: UserCreateSchema, db: Session = Depends(get_db)
+):
     return UserService(db).create_user(payload)
 
 
-@router.get("", response_model=list[User])
+@router.get("", response_model=list[UserSchema], status_code=200)
 @limiter.limit("30/minute")
 def list_users_endpoint(
     request: Request,
@@ -27,7 +29,7 @@ def list_users_endpoint(
     return UserService(db).list_users(skip=skip, limit=limit, sort=sort)
 
 
-@router.get("/{user_id}", response_model=User)
+@router.get("/{user_id}", response_model=UserSchema, status_code=200)
 @limiter.limit("30/minute")
 def get_user_endpoint(request: Request, user_id: int, db: Session = Depends(get_db)):
     user = UserService(db).get_user_by_id(user_id)
@@ -36,9 +38,11 @@ def get_user_endpoint(request: Request, user_id: int, db: Session = Depends(get_
     return user
 
 
-@router.put("/{user_id}", response_model=User)
+@router.put("/{user_id}", response_model=UserSchema, status_code=200)
 @limiter.limit("30/minute")
-def update_user_endpoint(request: Request, user_id: int, payload: UserUpdate, db: Session = Depends(get_db)):
+def update_user_endpoint(
+    request: Request, user_id: int, payload: UserUpdateSchema, db: Session = Depends(get_db)
+):
     user = UserService(db).update_user(user_id, payload)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -52,5 +56,3 @@ def delete_user_endpoint(request: Request, user_id: int, db: Session = Depends(g
     if not ok:
         raise HTTPException(status_code=404, detail="User not found")
     return None
-
-

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import UserForm from "../components/UserForm";
 import UserList from "../components/UserList";
 import { createUser, deleteUser, fetchRandomUser, listUsers, updateUser, extractErrorMessage } from "../lib/api";
-import type { User } from "../interfaces";
+import { User } from "../interfaces";
+import { validateUser } from "../utils/validation";
 
 const blankUser: User = {
   first_name: "",
@@ -11,7 +12,8 @@ const blankUser: User = {
   phone: "",
   gender: "",
   addresses: [{ street: "", city: "", country: "", timezone: { offset: "", description: "" } }],
-} as any;
+} as User;
+
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -21,13 +23,17 @@ export default function UsersPage() {
   const [status, setStatus] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
 
-  const load = async () => {
+  const load = async (preserveStatus = false) => {
     try {
       setIsError(false);
-      setStatus("Завантаження користувачів...");
+      if (!preserveStatus) {
+        setStatus("Завантаження користувачів...");
+      }
       const data = await listUsers({ sort });
       setUsers(data);
-      setStatus(`Завантажено ${data.length} користувачів`);
+      if (!preserveStatus) {
+        setStatus(`Завантажено ${data.length} користувачів`);
+      }
     } catch (e) {
       setIsError(true);
       setStatus(extractErrorMessage(e));
@@ -56,8 +62,7 @@ export default function UsersPage() {
       setIsError(false);
       setStatus("Завантаження випадкового користувача...");
       const data = await fetchRandomUser();
-      // Ensure we treat random user as new (no id)
-      const { id, ...rest } = data as any;
+      const { id, ...rest } = data as User;
       setEditing(null);
       setDraft({ ...(rest as User), id: undefined });
       setStatus("Випадкового користувача завантажено. Ви можете відредагувати та зберегти його в БД.");
@@ -68,6 +73,13 @@ export default function UsersPage() {
   };
 
   const save = async (u: User) => {
+    const validationError = validateUser(u);
+    if (validationError) {
+      setIsError(true);
+      setStatus(validationError);
+      return;
+    }
+
     try {
       setIsError(false);
       if (u.id) {
@@ -81,7 +93,7 @@ export default function UsersPage() {
       }
       setEditing(null);
       setDraft(null);
-      await load();
+      await load(true);
     } catch (e) {
       setIsError(true);
       setStatus(extractErrorMessage(e));
@@ -94,7 +106,7 @@ export default function UsersPage() {
       setStatus("Видалення користувача...");
       await deleteUser(id);
       setStatus("Користувача видалено");
-      await load();
+      await load(true);
     } catch (e) {
       setIsError(true);
       setStatus(extractErrorMessage(e));

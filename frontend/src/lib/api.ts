@@ -4,7 +4,7 @@ import type { User } from "../interfaces";
 const baseURL =
   (import.meta as any).env?.VITE_API_URL ||
   (typeof process !== "undefined" && (process as any).env?.VITE_API_URL) ||
-  "http://localhost:8001";
+  "http://localhost:8000";
 
 export const api = axios.create({
   baseURL,

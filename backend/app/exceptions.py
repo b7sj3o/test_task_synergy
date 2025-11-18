@@ -5,11 +5,11 @@ from fastapi import status, HTTPException
 
 class CustomHTTPException(HTTPException):
     def __init__(
-            self,
-            status_code: int,
-            detail: Any = None,
-            errors: Optional[dict] = None,
-            headers: Optional[Dict[str, Any]] = None,
+        self,
+        status_code: int,
+        detail: Any = None,
+        errors: Optional[dict] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.errors = errors
         super().__init__(status_code=status_code, detail=detail, headers=headers)
@@ -31,8 +31,7 @@ class AlreadyExistsError(CustomHTTPException):
 
 
 class RelatedObjectError(CustomHTTPException):
-    def __init__(self, detail: Any = "Object is related to other objects", errors: Optional[dict] = None):
+    def __init__(
+        self, detail: Any = "Object is related to other objects", errors: Optional[dict] = None
+    ):
         super().__init__(status.HTTP_409_CONFLICT, detail, errors)
-
-
-    

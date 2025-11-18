@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.services.address_service import AddressService
 from app.domain.models import User
-from app.domain.schemas import UserCreate, UserUpdate
+from app.domain.schemas import UserCreateSchema, UserUpdateSchema
 from app.exceptions import ValidationError, NotFoundError
 from app.infrastructure.db.repositories import UserRepository
 
@@ -23,25 +23,25 @@ class UserService:
     def get_user_by_id(self, user_id: int) -> User | None:
         return self.repo.get_by_id(user_id)
 
-    def create_user(self, payload: UserCreate) -> User:
+    def create_user(self, payload: UserCreateSchema) -> User:
         user = self.repo.create(payload)
-        if payload.addresses:
-            self.address_service.attach_to_user(user.id, payload.addresses)
+        # attach addresses to user
+        self.address_service.attach_to_user(user.id, payload.addresses)
+
         self.db.commit()
         self.db.refresh(user)
         return user
 
-    def update_user(self, user_id: int, payload: UserUpdate) -> User:
+    def update_user(self, user_id: int, payload: UserUpdateSchema) -> User:
         user = self.repo.get_by_id(user_id)
         if not user:
             raise NotFoundError("User not found")
 
         scalar_payload = payload.model_dump(exclude_unset=True, exclude={"addresses"})
         if scalar_payload:
-            self.repo.update(user_id, UserUpdate(**scalar_payload))
+            self.repo.update(user_id, UserUpdateSchema(**scalar_payload))
 
-        if payload.addresses is not None:
-            self.address_service.replace_for_user(user_id, payload.addresses)
+        self.address_service.replace_for_user(user_id, payload.addresses)
 
         self.db.commit()
         self.db.refresh(user)
@@ -51,8 +51,3 @@ class UserService:
         ok = self.repo.delete(user_id)
         self.db.commit()
         return ok
-
-
-
-
-

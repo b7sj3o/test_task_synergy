@@ -35,5 +35,3 @@ async def random_user(request: Request):
             ],
         }
         return mapped
-
-

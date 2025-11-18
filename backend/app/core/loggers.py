@@ -16,7 +16,7 @@ def setup_logger(name: str, level=logging.DEBUG, log_file: str = None):
     :param level: рівень логування
     :param log_file: шлях до файлу (якщо None, лог лише в консоль)
     """
-    
+
     logger = logging.Logger(name)
     logger.setLevel(level)
     logger.propagate = False
@@ -26,10 +26,7 @@ def setup_logger(name: str, level=logging.DEBUG, log_file: str = None):
     if log_file:
         file_path = LOG_DIR / log_file
         file_handler = RotatingFileHandler(
-            filename=file_path,
-            maxBytes=10*1024*1024,
-            backupCount=5,
-            encoding="utf-8"
+            filename=file_path, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
         )
         file_handler.setFormatter(formatter)
         file_handler.setLevel(level)
@@ -42,7 +39,7 @@ def setup_logger(name: str, level=logging.DEBUG, log_file: str = None):
     logger.addHandler(console_handler)
 
     return logger
-    
+
 
 api_logger = setup_logger(name="api", log_file="api.log")
 db_logger = setup_logger(name="db", log_file="db.log")

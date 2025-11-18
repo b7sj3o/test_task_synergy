@@ -17,7 +17,7 @@ def create_app() -> FastAPI:
         Base.metadata.create_all(bind=engine)
         yield
 
-    application = FastAPI(title=settings.app_name, debug=settings.debug, lifespan=lifespan)
+    application = FastAPI(title="Synergy Test API", debug=settings.debug, lifespan=lifespan)
 
     application.add_middleware(
         CORSMiddleware,
@@ -34,5 +34,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-

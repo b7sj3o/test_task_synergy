@@ -24,6 +24,3 @@ class Address(Base, ReprMixin):
 
     timezone_id: Mapped[int | None] = mapped_column(ForeignKey("timezones.id"), nullable=True)
     timezone: Mapped["Timezone"] = relationship("Timezone", back_populates="addresses")
-
-
-

@@ -1,3 +1,3 @@
-from .user import UserCreate, UserUpdate, User
-from .address import AddressCreate, AddressUpdate, Address
-from .timezone import TimezoneCreate, Timezone
+from .user import UserCreateSchema, UserUpdateSchema, UserSchema
+from .address import AddressCreateSchema, AddressUpdateSchema, AddressSchema
+from .timezone import TimezoneCreateSchema, TimezoneSchema

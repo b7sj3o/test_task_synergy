@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, EmailStr
 
-from app.domain.schemas.address import Address, AddressCreate, AddressUpdate
+from app.domain.schemas.address import AddressSchema, AddressCreateSchema, AddressUpdateSchema
 
 
-class UserBase(BaseModel):
+class UserBaseSchema(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
@@ -13,19 +13,17 @@ class UserBase(BaseModel):
     gender: str | None = None
 
 
-class UserCreate(UserBase):
-    addresses: list[AddressCreate] = []
+class UserCreateSchema(UserBaseSchema):
+    addresses: list[AddressCreateSchema] = []
 
 
-class UserUpdate(UserBase):
-    addresses: list[AddressUpdate] | None = None
+class UserUpdateSchema(UserBaseSchema):
+    addresses: list[AddressUpdateSchema] | None = None
 
 
-class User(UserBase):
+class UserSchema(UserBaseSchema):
     id: int
-    addresses: list[Address] = []
+    addresses: list[AddressSchema] = []
 
     class Config:
         from_attributes = True
-
-

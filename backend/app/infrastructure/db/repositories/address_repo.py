@@ -25,4 +25,3 @@ class AddressRepository:
     def bulk_create(self, addresses: Iterable[Address]) -> None:
         self.db.add_all(list(addresses))
         self.db.flush()
-

@@ -15,6 +15,3 @@ class Timezone(Base, ReprMixin):
     description: Mapped[str] = mapped_column(String(255))
 
     addresses: Mapped[list["Address"]] = relationship("Address", back_populates="timezone")
-
-
-

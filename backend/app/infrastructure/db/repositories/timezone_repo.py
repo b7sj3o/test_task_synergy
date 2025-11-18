@@ -23,4 +23,3 @@ class TimezoneRepository:
         self.db.add(tz)
         self.db.flush()
         return tz
-
